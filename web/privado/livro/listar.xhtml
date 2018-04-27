@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Manutenção de Livros</ui:define>
+        <ui:define name="conteudo">
+            <h:form>
+                <p:growl/>
+                <p:commandButton value="Novo" action="#{controleLivro.novo()}"
+                                 ajax="false" icon="ui-icon-plus"/>
+                <p:dataTable value="#{controleLivro.dao.lista}" var="obj">
+                    <p:column headerText="ISBN">
+                        <p:outputLabel value="#{obj.isbn}"/>
+                    </p:column>
+                    <p:column headerText="Titulo">
+                            <p:outputLabel value="#{obj.titulo}"/>
+                    </p:column>  	
+                    <p:column headerText="Resumo">
+                            <p:outputLabel value="#{obj.resumo}"/>
+                    </p:column>  	
+                    <p:column headerText="Editora">
+                            <p:outputLabel value="#{obj.editora}"/>
+                    </p:column> 				 
+                    <p:column headerText="Data de Publicação">
+                            <p:outputLabel value="#{obj.dataPublicacao}"/>
+                    </p:column>
+                    <p:column headerText="Código de Barras">
+                            <p:outputLabel value="#{obj.codigoBarras}"/>
+                    </p:column>
+                    <p:column headerText="Número de Páginas">
+                            <p:outputLabel value="#{obj.numeroPaginas}"/>
+                    </p:column>
+                    <p:column headerText="Ativo">
+                            <p:outputLabel value="#{obj.ativo}"/>
+                    </p:column>
+                    <p:column headerText="Data de Cadastro">
+                        <p:outputLabel value="#{obj.dataCadastro}"/>                     
+                    </p:column>
+                    <p:column headerText="Valor">
+                            <p:outputLabel value="#{obj.valor}"/>
+                    </p:column>
+                    <p:column headerText="Idioma">
+                            <p:outputLabel value="#{obj.idioma.nome}"/>
+                    </p:column>
+                    <p:column headerText="Formato">
+                            <p:outputLabel value="#{obj.formato.nome}"/>
+                    </p:column>
+                    <p:column headerText="Catalogo">
+                            <p:outputLabel value="#{obj.catalogo.nome}"/>
+                    </p:column>                
+                    <p:column headerText="Ações">
+                        <div align="center">
+                            <p:commandButton action="#{controleLivro.editar(obj.isbn)}"
+                                             ajax="false" icon="ui-icon-pencil"
+                                             title="Editar"/>
+                            <p:commandButton action="#{controleLivro.remover(obj.isbn)}"
+                                             ajax="false" icon="ui-icon-trash"
+                                             title="Remover"
+                                             onclick="if (!confirm('Confirma a exclusão?')) return false"/>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+
