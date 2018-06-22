@@ -12,8 +12,7 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean(name = "controleIdioma")
 @SessionScoped
 public class ControleIdioma implements Serializable {
-    
-    private IdiomaDAO dao;
+    private IdiomaDAO<Idioma> dao;
     private Idioma objeto;
     
     public ControleIdioma(){
@@ -30,7 +29,15 @@ public class ControleIdioma implements Serializable {
     }
     
     public String salvar(){
-        if(dao.salvar(objeto)){
+        boolean persistiu;
+        
+        if(objeto.getId() == null) {
+            persistiu = dao.persist(objeto);
+        } else {
+            persistiu = dao.merge(objeto);
+        }
+        
+        if(persistiu){
             Util.mensagemInformacao(dao.getMensagem());
             return "listar?faces-redirect=true";
         } else {
@@ -50,7 +57,7 @@ public class ControleIdioma implements Serializable {
     
     public void remover(Integer id){
         objeto = dao.localizar(id);
-        if (dao.remover(objeto)){
+        if (dao.remove(objeto)){
             Util.mensagemInformacao(dao.getMensagem());
         } else {
             Util.mensagemErro(dao.getMensagem());

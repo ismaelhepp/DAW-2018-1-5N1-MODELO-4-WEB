@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Manutenção de Catálogo</ui:define>
+        <ui:define name="conteudo">
+            <h:form id="formListagem" prependId="false">
+                <p:growl/>
+                <p:commandButton value="Novo" actionListener="#{controleCatalogo.novo()}"
+                                 icon="ui-icon-plus"
+                                 update="formEdicao"
+                                 process="@this"
+                                 oncomplete="PF('dlg').show();"/>
+                <div align="center">
+                    <p:panelGrid columns="11">
+                        <p:outputLabel value="Ordem: "/>
+                        <p:selectOneMenu value="#{controleCatalogo.dao.ordem}">
+                            <f:selectItem itemLabel="ID" itemValue="id"/>
+                            <f:selectItem itemLabel="Nome" itemValue="nome"/>
+                            <f:selectItem itemLabel="Descrição" itemValue="descricao"/>
+                            <f:selectItem itemLabel="Catalogo" itemValue="livraria.nome"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Filtro:"/>
+                        <p:inputText value="#{controleCatalogo.dao.filtro}">
+                            <p:ajax update="listagem" event="blur"/>
+                        </p:inputText>
+                        <p:commandButton value="Filtrar" update="listagem"/>
+                        <p:outputLabel value="Máximo de Objetos"/>
+                        <p:inputNumber value="#{controleCatalogo.dao.maximoObjetos}" size="3"
+                                       thousandSeparator="" decimalSeparator="" decimalPlaces="0">
+                            <p:ajax event="keyup" update="listagem"/> 
+                        </p:inputNumber>
+                        <p:commandButton action="#{controleCatalogo.dao.primeiro()}" 
+                                         title="Primeiro" icon="ui-icon-seek-first" update="listagem"/>
+                        <p:commandButton action="#{controleCatalogo.dao.anterior()}" 
+                                         title="Anterior" icon="ui-icon-seek-prev" 
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleCatalogo.dao.proximo()}" 
+                                         title="Proximo" icon="ui-icon-seek-next" update="listagem"/>
+                        <p:commandButton action="#{controleCatalogo.dao.ultimo()}" 
+                                         title="Ultimo" icon="ui-icon-seek-end" update="listagem"/>                          
+                    </p:panelGrid>
+                </div>
+
+                <p:dataTable value="#{controleCatalogo.dao.listaObjetos}" var="obj"
+                             id="listagem">
+                    <f:facet name="footer">
+                        <p:outputLabel value="#{controleCatalogo.dao.mensagemNavegacao}"/>
+                    </f:facet>   
+
+                    <p:column headerText="ID">
+                        <p:outputLabel value="#{obj.id}"/>
+                    </p:column>
+                    <p:column headerText="Nome">
+                        <p:outputLabel value="#{obj.nome}"/>
+                    </p:column>                    
+                    <p:column headerText="Descrição">
+                        <p:outputLabel value="#{obj.descricao}"/>
+                    </p:column>
+                    <p:column headerText="Livraria">
+                        <p:outputLabel value="#{obj.livraria.nome}"/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <div align="center">
+                            <p:commandButton actionListener="#{controleCatalogo.editar(obj.id)}"
+                                             icon="ui-icon-pencil"
+                                             title="Editar"
+                                             update="formEdicao"
+                                             process="@this"
+                                             oncomplete="PF('dlg').show();"/>
+                            <p:commandButton actionListener="#{controleCatalogo.remover(obj.id)}"
+                                             icon="ui-icon-trash"
+                                             update="@form"
+                                             process="@this"
+                                             title="Remover"
+                                             onclick="if (!confirm('Confirma a exclusão?'))
+                                                         return false"/>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+        <ui:define name="dialogos">
+            <p:dialog widgetVar="dlg" header="Edição" modal="true" resizable="false">
+                <h:form id="formEdicao">
+                    <p:growl/>
+                    <p:tabView id="tab">
+                        <p:tab title="Dados Principais">
+                            <div align="center">
+                                <p:panelGrid columns="2">
+                                    <f:facet name="footer">
+                                        <div align="center">
+                                            <p:commandButton value="Salvar" icon="ui-icon-disk"
+                                                             actionListener="#{controleCatalogo.salvar()}"
+                                                             update="listagem formEdicao"
+                                                             process="@form"
+                                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                        </div>
+                                    </f:facet>
+                                    <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controleCatalogo.objeto.id}"
+                                                 readonly="true" size="5"/>
+                                    <p:outputLabel value="Nome" for="txtNome"/>
+                                    <p:inputText id="txtNome" value="#{controleCatalogo.objeto.nome}"
+                                                 size="50" maxlength="50" placeholder="Obrigatório"/>
+                                    <p:outputLabel value="Descrição" for="txtDescricao"/>
+                                    <p:inputText id="txtDescricao" value="#{controleCatalogo.objeto.descricao}"
+                                                 size="50"/>
+                                    <p:outputLabel value="Livraria" for="selectLivraria"/>
+                                    <p:selectOneMenu id="selectLivraria" value="#{controleCatalogo.objeto.livraria}">
+                                        <f:converter converterId="converterLivraria"/>
+                                        <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                        <f:selectItems value="#{controleCatalogo.daoLivraria.listaTodos}" var="l"
+                                                       itemLabel="#{l.nome}"/>
+                                    </p:selectOneMenu>
+                                </p:panelGrid>
+                            </div>
+
+                        </p:tab>
+                    </p:tabView>
+
+                    <ui:include src="/templates/ajaxstatus.xhtml"/>
+                </h:form>
+            </p:dialog>
+        </ui:define>
+    </ui:composition>
+</html>

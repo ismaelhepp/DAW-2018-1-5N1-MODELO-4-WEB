@@ -12,8 +12,7 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean(name = "controleFormato")
 @SessionScoped
 public class ControleFormato implements Serializable {
-    
-    private FormatoDAO dao;
+    private FormatoDAO<Formato> dao;
     private Formato objeto;
     
     public ControleFormato(){
@@ -30,7 +29,15 @@ public class ControleFormato implements Serializable {
     }
     
     public String salvar(){
-        if(dao.salvar(objeto)){
+        boolean persistiu;
+        
+        if(objeto.getId() == null) {
+            persistiu = dao.persist(objeto);
+        } else {
+            persistiu = dao.merge(objeto);
+        }
+        
+        if(persistiu){
             Util.mensagemInformacao(dao.getMensagem());
             return "listar?faces-redirect=true";
         } else {
@@ -50,7 +57,7 @@ public class ControleFormato implements Serializable {
     
     public void remover(Integer id){
         objeto = dao.localizar(id);
-        if (dao.remover(objeto)){
+        if (dao.remove(objeto)){
             Util.mensagemInformacao(dao.getMensagem());
         } else {
             Util.mensagemErro(dao.getMensagem());

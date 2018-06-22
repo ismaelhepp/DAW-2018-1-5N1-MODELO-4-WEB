@@ -12,12 +12,11 @@ import javax.faces.bean.SessionScoped;
 @ManagedBean(name = "controleAutor")
 @SessionScoped
 public class ControleAutor implements Serializable {
-    
-    private AutorDAO dao;
+    private AutorDAO<Autor> dao;
     private Autor objeto;
     
     public ControleAutor(){
-        dao = new AutorDAO();
+        dao = new AutorDAO<>();
     }
     
     public String listar(){
@@ -30,7 +29,15 @@ public class ControleAutor implements Serializable {
     }
     
     public String salvar(){
-        if(dao.salvar(objeto)){
+        boolean persistiu;
+        
+        if(objeto.getId() == null) {
+            persistiu = dao.persist(objeto);
+        } else {
+            persistiu = dao.merge(objeto);
+        }
+        
+        if(persistiu){
             Util.mensagemInformacao(dao.getMensagem());
             return "listar?faces-redirect=true";
         } else {
@@ -50,7 +57,7 @@ public class ControleAutor implements Serializable {
     
     public void remover(Integer id){
         objeto = dao.localizar(id);
-        if (dao.remover(objeto)){
+        if (dao.remove(objeto)){
             Util.mensagemInformacao(dao.getMensagem());
         } else {
             Util.mensagemErro(dao.getMensagem());
