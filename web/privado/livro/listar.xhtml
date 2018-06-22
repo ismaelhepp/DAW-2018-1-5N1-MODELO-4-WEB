@@ -21,9 +21,7 @@
                         <p:selectOneMenu value="#{controleLivro.dao.ordem}">
                             <f:selectItem itemLabel="ISBN" itemValue="isbn"/>
                             <f:selectItem itemLabel="Título" itemValue="titulo"/>
-                            <f:selectItem itemLabel="Data de Publicação" itemValue="data_publicacao"/>
-                            <f:selectItem itemLabel="Data de Cadastro" itemValue="data_cadastro"/>
-                            <f:selectItem itemLabel="Valor" itemValue="valor"/>
+                            <f:selectItem itemLabel="Editora" itemValue="editora"/>
                             <p:ajax update="listagem"/>
                         </p:selectOneMenu>
                         <p:outputLabel value="Filtro:"/>
